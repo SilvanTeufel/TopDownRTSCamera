@@ -15,11 +15,11 @@ void AHUDBase::DrawHUD()
 
 	if (bStartSelecting) {
 
-		for (int32 i = 0; i < FoundActors.Num(); i++) {
-			FoundActors[i]->SetDeselected();
+		for (int32 i = 0; i < SelectedUnits.Num(); i++) {
+			SelectedUnits[i]->SetDeselected();
 		}
 
-		FoundActors.Empty();
+		SelectedUnits.Empty();
 		CurrentPoint = GetMousePos2D();
 
 		if (abs(InitialPoint.X - CurrentPoint.X) >= 2) {
@@ -96,11 +96,10 @@ void AHUDBase::DrawHUD()
 				CurrentSelectionPoint.X - InitialSelectionPoint.X,
 				CurrentSelectionPoint.Y - InitialSelectionPoint.Y);
 
-			GetActorsInSelectionRectangle<ACharacterBase>(InitialSelectionPoint, CurrentSelectionPoint, FoundActors, false, false);
+			GetActorsInSelectionRectangle<ACharacterBase>(InitialSelectionPoint, CurrentSelectionPoint, SelectedUnits, false, false);
 
-			for (int32 i = 0; i < FoundActors.Num(); i++) {
-				FoundActors[i]->SetSelected();
-
+			for (int32 i = 0; i < SelectedUnits.Num(); i++) {
+				SelectedUnits[i]->SetSelected();
 			}
 		}
 
@@ -131,8 +130,8 @@ void AHUDBase::AimToMouse()
 	FVector Start;
 	FVector End;
 
-	for (int32 i = 0; i < FoundActors.Num(); i++) {
-		Start = FoundActors[i]->GetActorLocation();
+	for (int32 i = 0; i < SelectedUnits.Num(); i++) {
+		Start = SelectedUnits[i]->GetActorLocation();
 		End = FVector(Start.Z, PosX, PosY);
 		DrawDebugLine(GetWorld(), Start, End, FColor::Orange, false, 2.0f);
 	}
@@ -153,7 +152,7 @@ void AHUDBase::MoveActorsThroughWayPoints(TArray <ACharacterBase*> Actors)
 				Actors[i]->MoveArrayIterator++;
 				if (Actors[i]->MoveArrayIterator < Actors[i]->MoveArray.Num()) {
 					UAIBlueprintHelperLibrary::SimpleMoveToLocation(Actors[i]->GetController(), Actors[i]->MoveArray[Actors[i]->MoveArrayIterator]);
-					Actors[i]->setAnimState(Run);
+					Actors[i]->setAnimState(CharacterData::Run);
 				}
 				else {
 					Actors[i]->MoveArray.Empty();
@@ -171,20 +170,20 @@ void AHUDBase::StartMovingActors(TArray<ACharacterBase*> Actors)
 {
 	for (int32 i = 0; i < Actors.Num(); i++) {
 		UAIBlueprintHelperLibrary::SimpleMoveToLocation(Actors[i]->GetController(), Actors[i]->MoveArray[0]);
-		Actors[i]->setAnimState(Run);
+		Actors[i]->setAnimState(CharacterData::Run);
 	}
 }
 
 void AHUDBase::setZeroActor(ACharacterBase* Actor)
 {
-	for (int32 i = 0; i < FoundActors.Num(); i++) {
-		FoundActors[i]->SetDeselected();
+	for (int32 i = 0; i < SelectedUnits.Num(); i++) {
+		SelectedUnits[i]->SetDeselected();
 	}
 
-	FoundActors.Empty();
-	FoundActors.Add(Actor);
+	SelectedUnits.Empty();
+	SelectedUnits.Add(Actor);
 
-	for (int32 i = 0; i < FoundActors.Num(); i++) {
-		FoundActors[i]->SetSelected();
+	for (int32 i = 0; i < SelectedUnits.Num(); i++) {
+		SelectedUnits[i]->SetSelected();
 	}
 }

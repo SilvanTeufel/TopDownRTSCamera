@@ -5,11 +5,9 @@
 #include "Characters/CharacterBase.h"
 
 
-
-
 UCharacterBaseAnimInstance::UCharacterBaseAnimInstance()
 {
-	CharAnimState = Idle;
+	CharAnimState = CharacterData::Idle;
 }
 
 void UCharacterBaseAnimInstance::NativeInitializeAnimation()
@@ -26,8 +24,7 @@ void UCharacterBaseAnimInstance::NativeUpdateAnimation(float Deltaseconds)
 
 		ACharacterBase* Actor = Cast<ACharacterBase>(OwningActor);
 		if (Actor != nullptr) {
-			CharAnimState = Actor->getAnimState();
+			CharAnimState = Actor->GetAnimState();
 		}
 	}
-
 }

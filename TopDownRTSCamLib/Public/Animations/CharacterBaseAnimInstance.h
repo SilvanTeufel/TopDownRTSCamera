@@ -20,7 +20,7 @@ public:
 		FString AnimStateString;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = CharacterStatus)
-		TEnumAsByte<CharacterStatus> CharAnimState;
+		TEnumAsByte<CharacterData::CharacterState> CharAnimState;
 
 	virtual void NativeInitializeAnimation() override;
 	virtual void NativeUpdateAnimation(float Deltaseconds) override;

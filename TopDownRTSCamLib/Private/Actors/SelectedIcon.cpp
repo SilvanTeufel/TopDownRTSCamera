@@ -1,14 +1,14 @@
 // Copyright 2022 Silvan Teufel / Teufel-Engineering.com All Rights Reserved.
 
 
-#include "Actors/SelectedCharacterIcon.h"
+#include "Actors/SelectedIcon.h"
 #include "Components/SphereComponent.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Materials/Material.h"
 #include "Engine/StaticMesh.h"
 
 // Sets default values
-ASelectedCharacterIcon::ASelectedCharacterIcon()
+ASelectedIcon::ASelectedIcon()
 {
     // Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
     PrimaryActorTick.bCanEverTick = true;
@@ -35,30 +35,31 @@ ASelectedCharacterIcon::ASelectedCharacterIcon()
             ActionMaterial = (UMaterial*)MaterialAction.Object;
             IconMesh->SetMaterial(0, ActionMaterial);
         }
+        IconMesh->bHiddenInGame = true;
     }
 }
 
 // Called when the game starts or when spawned
-void ASelectedCharacterIcon::BeginPlay()
+void ASelectedIcon::BeginPlay()
 {
     Super::BeginPlay();
 }
 
 // Called every frame
-void ASelectedCharacterIcon::Tick(float DeltaTime)
+void ASelectedIcon::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
 
 }
 
-void ASelectedCharacterIcon::ChangeMaterialColour(FVector4d Colour)
+void ASelectedIcon::ChangeMaterialColour(FVector4d Colour)
 {
     DynMaterial = UMaterialInstanceDynamic::Create(BlueMaterial, this);
     DynMaterial->SetVectorParameterValue(TEXT("Emissive Color"), Colour);
     IconMesh->SetMaterial(0, DynMaterial);
 }
 
-void ASelectedCharacterIcon::ChangeMaterialToAction()
+void ASelectedIcon::ChangeMaterialToAction()
 {
     DynMaterial = UMaterialInstanceDynamic::Create(ActionMaterial, this);
     IconMesh->SetMaterial(0, DynMaterial);

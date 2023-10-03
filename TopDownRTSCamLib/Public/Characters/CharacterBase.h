@@ -24,6 +24,7 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -37,14 +38,16 @@ public:
 	float CheckAngle(FVector VectorOne, float AngleOneX);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = CharacterStatus)
-		TEnumAsByte<CharacterStatus> CharAnimState;
+		TEnumAsByte<CharacterData::CharacterState> CharAnimState;
 
-	void setAnimState(TEnumAsByte<CharacterStatus> NewCharAnimState);
-	TEnumAsByte<CharacterStatus> getAnimState();
+	void setAnimState(TEnumAsByte<CharacterData::CharacterState> NewCharAnimState);
+	TEnumAsByte<CharacterData::CharacterState> GetAnimState();
 
 	FVector ActualLocation;
 	// RTSHud related ///////////
 public:
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "SpawnSelectedIcon", Keywords = "RTSUnitTemplate SpawnSelectedIcon"), Category = TopDownRTSTemplate)
+	void SpawnSelectedIcon();
 	void SetSelected();
 	void SetDeselected();
 	/////////////////////////////
@@ -58,17 +61,18 @@ public:
 	FVector ForwardVector;
 	FVector LastDirection;
 	float JumpHeight = 600.0f;
+	
 	int DoubleJumpCounter = 0;
 
-	// SelectedCharacterIcon related /////////
+	// SelectedIcon related /////////
 protected:
-	class ASelectedCharacterIcon* SelectedCharacterIcon;
+	class ASelectedIcon* SelectedIcon;
 	//////////////////////////////////////
 
 
 private:
 	// A decal that projects to the cursor location. //
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 		class UDecalComponent* CursorToWorld;
 	////////////////////////////////////////
 

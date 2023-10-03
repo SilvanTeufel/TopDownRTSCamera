@@ -22,11 +22,11 @@
 #include "GameFramework/FloatingPawnMovement.h"
 
 #include "Blueprint/AIBlueprintHelperLibrary.h"
-#include "HeadMountedDisplayFunctionLibrary.h"
+//#include "HeadMountedDisplayFunctionLibrary.h"
 
 #include "Materials/Material.h" 
 #include "Engine/World.h"
-#include "Actors/SelectedCharacterIcon.h"
+#include "Actors/SelectedIcon.h"
 
 
 // Sets default values
@@ -85,6 +85,7 @@ void ACharacterBase::BeginPlay()
 
 	FQuat QuatRotation = FQuat(NewRotation);
 	GetMesh()->SetRelativeRotation(QuatRotation, false, 0, ETeleportType::None);
+	SpawnSelectedIcon();
 }
 
 
@@ -93,43 +94,18 @@ void ACharacterBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (CursorToWorld != nullptr)
-	{
-		if (UHeadMountedDisplayFunctionLibrary::IsHeadMountedDisplayEnabled())
-		{
-			if (UWorld* World = GetWorld())
-			{
-				FHitResult HitResult;
-				FCollisionQueryParams Params(NAME_None, FCollisionQueryParams::GetUnknownStatId());
-				Params.AddIgnoredActor(this);
-				FQuat SurfaceRotation = HitResult.ImpactNormal.ToOrientationRotator().Quaternion();
-				CursorToWorld->SetWorldLocationAndRotation(HitResult.Location, SurfaceRotation);
-			}
-		}
-		else if (APlayerController* PC = Cast<APlayerController>(GetController()))
-		{
-			FHitResult TraceHitResult;
-			PC->GetHitResultUnderCursor(ECC_Visibility, true, TraceHitResult);
-			FVector CursorFV = TraceHitResult.ImpactNormal;
-			FRotator CursorR = CursorFV.Rotation();
-			CursorToWorld->SetWorldLocation(TraceHitResult.Location);
-			CursorToWorld->SetWorldRotation(CursorR);
-		}
-	}
-
-
 	switch (CharAnimState)
 	{
-	case Run:
+	case CharacterData::Run:
 	{
 		ActualLocation = GetActorLocation();
 		float vdist = FVector::Dist(ActualLocation, MoveEndLocation);
 		if (vdist < 120.f) {
-			CharAnimState = Idle;
+			CharAnimState = CharacterData::Idle;
 		}
 	}
 	break;
-	case Idle:
+	case CharacterData::Idle:
 	{
 
 	}
@@ -181,12 +157,12 @@ float ACharacterBase::CheckAngle(FVector Vector, float Angle) {
 	return Angle;
 }
 
-void ACharacterBase::setAnimState(TEnumAsByte<CharacterStatus> NewCharAnimState)
+void ACharacterBase::setAnimState(TEnumAsByte<CharacterData::CharacterState> NewCharAnimState)
 {
 	CharAnimState = NewCharAnimState;
 }
 
-TEnumAsByte<CharacterStatus> ACharacterBase::getAnimState()
+TEnumAsByte<CharacterData::CharacterState> ACharacterBase::GetAnimState()
 {
 	return CharAnimState;
 }
@@ -205,9 +181,9 @@ float ACharacterBase::CalcAngle(FVector VectorOne, FVector VectorTwo)
 
 
 // RTSHud related //////////////////////////////////////////////////
-void ACharacterBase::SetSelected()
-{
 
+void ACharacterBase::SpawnSelectedIcon()
+{
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.bNoFail = true;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
@@ -215,29 +191,41 @@ void ACharacterBase::SetSelected()
 	FTransform SpellTransform;
 	SpellTransform.SetLocation(FVector(500, 0, 0));
 	SpellTransform.SetRotation(FQuat(FRotator::ZeroRotator));
-	SelectedCharacterIcon = GetWorld()->SpawnActor<ASelectedCharacterIcon>(ASelectedCharacterIcon::StaticClass(), SpellTransform, SpawnParams);
-	if (SelectedCharacterIcon) {
-		SelectedCharacterIcon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, FName("Selection_Icon_Socket"));
-		SelectedCharacterIcon->SetActorScale3D(FVector(1.0f, 1.0f, 0.05f));
+	SelectedIcon = GetWorld()->SpawnActor<ASelectedIcon>(ASelectedIcon::StaticClass(), SpellTransform, SpawnParams);
+	if (SelectedIcon) {
+		SelectedIcon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, FName("rootSocket"));
+		SelectedIcon->ChangeMaterialColour(FVector4d(5.f, 40.f, 30.f, 0.5f));
 	}
+}
+
+
+void ACharacterBase::SetSelected()
+{
+	if(SelectedIcon)
+		SelectedIcon->IconMesh->bHiddenInGame = false;
 }
 
 void ACharacterBase::SetDeselected()
 {
-	SelectedCharacterIcon->Destroy(true, false);
+	//SelectedIcon->Destroy(true, false);
+	if (SelectedIcon)
+	{
+		SelectedIcon->IconMesh->bHiddenInGame = true;
+		SelectedIcon->ChangeMaterialColour(FVector4d(5.f, 40.f, 30.f, 0.5f));
+	}
 }
 /////////////////////////////////////////////////////////////////////
 
 void ACharacterBase::CreateIconNormalRadius()
 {
-	if (SelectedCharacterIcon) {
-		FVector IconScale = SelectedCharacterIcon->GetActorScale3D();
+	if (SelectedIcon) {
+		FVector IconScale = SelectedIcon->GetActorScale3D();
 		if (IconScale.X + 0.5 < 1.0f) {
-			SelectedCharacterIcon->SetActorScale3D(FVector(1.0f));
+			SelectedIcon->SetActorScale3D(FVector(1.0f));
 		}
 		else if (IconScale.X - 0.5 > 1.0f) {
-			SelectedCharacterIcon->SetActorScale3D(FVector(1.0f));
+			SelectedIcon->SetActorScale3D(FVector(1.0f));
 		}
-		SelectedCharacterIcon->ChangeMaterialColour(FVector4d(5.f, 10.f, 100.f, 0.5f));
+		SelectedIcon->ChangeMaterialColour(FVector4d(5.f, 10.f, 100.f, 0.5f));
 	}
 }

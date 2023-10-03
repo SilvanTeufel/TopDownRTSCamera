@@ -49,7 +49,7 @@ public:
 	UPROPERTY(BlueprintReadWrite, meta = (DisplayName = "bStartSelecting", Keywords = "TopDownRTSCamLib bStartSelecting"), Category = TopDownRTSCamLib)
 		bool bStartSelecting = false;
 
-	UPROPERTY(BlueprintReadWrite, meta = (DisplayName = "FoundActors", Keywords = "TopDownRTSCamLib FoundActors"), Category = TopDownRTSCamLib)
-		TArray <ACharacterBase*> FoundActors;
+	UPROPERTY(BlueprintReadWrite, meta = (DisplayName = "SelectedUnits", Keywords = "TopDownRTSCamLib SelectedUnits"), Category = TopDownRTSCamLib)
+		TArray <ACharacterBase*> SelectedUnits;
 	
 };

@@ -10,7 +10,7 @@ public class TopDownRTSCamLib : ModuleRules
 
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 		// Core dependencies
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "GameplayTags", "XRBase" });
 
 		// Ai dependencies
 		PublicDependencyModuleNames.AddRange(new string[] { "AIModule" });

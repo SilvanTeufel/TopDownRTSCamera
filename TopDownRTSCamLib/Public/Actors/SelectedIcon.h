@@ -8,16 +8,16 @@
 #include "Components/StaticMeshComponent.h"
 #include "Materials/MaterialInterface.h"
 #include "Materials/MaterialInstanceDynamic.h"
-#include "SelectedCharacterIcon.generated.h"
+#include "SelectedIcon.generated.h"
 
 UCLASS()
-class TOPDOWNRTSCAMLIB_API ASelectedCharacterIcon : public AActor
+class TOPDOWNRTSCAMLIB_API ASelectedIcon : public AActor
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this actor's properties
-	ASelectedCharacterIcon();
+	ASelectedIcon();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = TopDownRTSCamLib)
 		UStaticMeshComponent* IconMesh;
