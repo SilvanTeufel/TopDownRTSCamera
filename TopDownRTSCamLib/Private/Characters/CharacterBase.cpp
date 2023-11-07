@@ -33,25 +33,40 @@
 ACharacterBase::ACharacterBase(const FObjectInitializer& ObjectInitializer) :Super(ObjectInitializer)
 {
 
-	// Set size for player capsule
-	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
+		// Set size for player capsule
+		GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 
-	// Don't rotate character to camera direction
-	bUseControllerRotationPitch = false;
-	bUseControllerRotationYaw = false;
-	bUseControllerRotationRoll = false;
+		// Don't rotate character to camera direction
+		bUseControllerRotationPitch = false;
+		bUseControllerRotationYaw = false;
+		bUseControllerRotationRoll = false;
 
 
-	// Configure character movement
-	GetCharacterMovement()->bOrientRotationToMovement = true; // Rotate character to moving direction
-	GetCharacterMovement()->RotationRate = FRotator(0.f, 640.f, 0.f);
-	GetCharacterMovement()->bConstrainToPlane = true;
-	GetCharacterMovement()->bSnapToPlaneAtStart = true;
+		// Configure character movement
+		GetCharacterMovement()->bOrientRotationToMovement = true; // Rotate character to moving direction
+		GetCharacterMovement()->RotationRate = FRotator(0.f, 640.f, 0.f);
+		GetCharacterMovement()->bConstrainToPlane = true;
+		GetCharacterMovement()->bSnapToPlaneAtStart = true;
+	
+		SetupSelectedIcon();
 
+		// Activate ticking in order to update the cursor every frame.
+		PrimaryActorTick.bCanEverTick = true;
+		PrimaryActorTick.bStartWithTickEnabled = true;
+
+		if (RootComponent == nullptr) {
+			RootComponent = ObjectInitializer.CreateDefaultSubobject<USceneComponent>(this, TEXT("Root"));
+		}
+
+}
+
+void ACharacterBase::SetupSelectedIcon()
+{
+	
 	// Create a decal in the world to show the cursor's location
 	CursorToWorld = CreateDefaultSubobject<UDecalComponent>("CursorToWorld");
 	CursorToWorld->SetupAttachment(RootComponent);
-
+	
 	static ConstructorHelpers::FObjectFinder<UMaterial> DecalMaterialAsset(TEXT("Material'/TopDownRTSCamLib/Materials/M_Ring_Aura.M_Ring_Aura'"));
 
 
@@ -62,16 +77,6 @@ ACharacterBase::ACharacterBase(const FObjectInitializer& ObjectInitializer) :Sup
 	CursorToWorld->DecalSize = FVector(16.0f, 32.0f, 32.0f);
 	CursorToWorld->SetRelativeRotation(FRotator(90.0f, 0.0f, 0.0f).Quaternion());
 	CursorToWorld->SetVisibility(false);
-
-	// Activate ticking in order to update the cursor every frame.
-	PrimaryActorTick.bCanEverTick = true;
-	PrimaryActorTick.bStartWithTickEnabled = true;
-
-	if (RootComponent == nullptr) {
-		RootComponent = ObjectInitializer.CreateDefaultSubobject<USceneComponent>(this, TEXT("Root"));
-	}
-
-
 }
 
 // Called when the game starts or when spawned
@@ -79,7 +84,7 @@ void ACharacterBase::BeginPlay()
 {
 
 	Super::BeginPlay();
-
+	
 
 	FRotator NewRotation = FRotator(0, -90, 0);
 
